@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="size_home_progressBar">52dp</dimen>
+    <dimen name="size_home_progressBar">32dp</dimen>
 </resources>

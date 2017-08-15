@@ -1,17 +1,13 @@
 package ss.com.mvprx.home;
 
+
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 import ss.com.mvprx.home.model.NewsApiResponse;
-import ss.com.mvprx.server.NewsApiService;
+import ss.com.mvprx.home.model.repo.NewsRepository;
 
 /**
  * @author S.Shahini
@@ -20,6 +16,12 @@ import ss.com.mvprx.server.NewsApiService;
 
 public class HomePresenter implements HomeContract.Presenter {
     private HomeContract.View view;
+    private NewsRepository newsRepository;
+    private Disposable subscription;
+
+    public HomePresenter(NewsRepository newsRepository) {
+        this.newsRepository = newsRepository;
+    }
 
     @Override
     public void attachView(HomeContract.View view) {
@@ -30,48 +32,37 @@ public class HomePresenter implements HomeContract.Presenter {
     @Override
     public void detachView() {
         this.view = null;
+        if (subscription != null && !subscription.isDisposed()) {
+            subscription.dispose();
+        }
+
     }
 
     @Override
     public void loadNews() {
         view.setProgressIndicator(true);
-
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
-        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-        httpClient.addInterceptor(loggingInterceptor);
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(ss.com.mvprx.BuildConfig.API_BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .client(httpClient.build())
-                .build();
-
-        NewsApiService service = retrofit.create(NewsApiService.class);
-
-        service.listRepos("techcrunch", ss.com.mvprx.BuildConfig.API_KEY)
+        newsRepository.getNews()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
                 .subscribe(new Observer<NewsApiResponse>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
-
+                        subscription = d;
                     }
 
                     @Override
-                    public void onNext(@NonNull NewsApiResponse newsApiResponse) {
+                    public void onNext(final @NonNull NewsApiResponse newsApiResponse) {
                         view.showNews(newsApiResponse.getNewsViewModels());
-                        view.setProgressIndicator(false);
                     }
 
                     @Override
                     public void onError(@NonNull Throwable e) {
-
+                        view.showError(e.getMessage());
                     }
 
                     @Override
                     public void onComplete() {
+                        view.setProgressIndicator(false);
 
                     }
                 });
@@ -79,6 +70,6 @@ public class HomePresenter implements HomeContract.Presenter {
 
     @Override
     public void onNewsClick() {
-
+        view.showNewsDetail();
     }
 }

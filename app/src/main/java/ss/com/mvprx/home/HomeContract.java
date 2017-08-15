@@ -15,6 +15,8 @@ public interface HomeContract {
     interface View extends BaseView{
         void showNews(ArrayList<NewsViewModel> newsViewModels);
         void setProgressIndicator(boolean mustShow);
+        void showNewsDetail();
+        void showError(String message);
     }
 
     interface Presenter extends BasePresenter<View>{

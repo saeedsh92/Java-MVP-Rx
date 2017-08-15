@@ -1,6 +1,7 @@
 package ss.com.mvprx.home.adapter;
 
 import android.content.Context;
+import android.support.annotation.DrawableRes;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +14,7 @@ import java.util.List;
 
 import ss.com.mvprx.R;
 import ss.com.mvprx.home.model.NewsViewModel;
-import ss.com.mvprx.util.imageloading.ImageLoadingServiceInjector;
+import ss.com.mvprx.util.imageloading.ImageLoadingService;
 
 /**
  * @author S.Shahini
@@ -23,15 +24,20 @@ import ss.com.mvprx.util.imageloading.ImageLoadingServiceInjector;
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
     private Context context;
     private List<NewsViewModel> newsViewModels;
+    private NewsAdapter.OnNewsItemClick onNewsItemClick;
+    private ImageLoadingService imageLoadingService;
 
-    public NewsAdapter(Context context, ArrayList<NewsViewModel> newsViewModels) {
+    public NewsAdapter(Context context, ArrayList<NewsViewModel> newsViewModels
+            , NewsAdapter.OnNewsItemClick onNewsItemClick, ImageLoadingService imageLoadingService) {
         this.context = context;
         this.newsViewModels = newsViewModels;
+        this.onNewsItemClick = onNewsItemClick;
+        this.imageLoadingService = imageLoadingService;
     }
 
     @Override
     public NewsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new NewsViewHolder(LayoutInflater.from(context).inflate(R.layout.layout_news, parent, false));
+        return new NewsViewHolder(LayoutInflater.from(context).inflate(R.layout.layout_news, parent, false), imageLoadingService);
     }
 
     @Override
@@ -44,28 +50,42 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         return newsViewModels.size();
     }
 
-    public static class NewsViewHolder extends RecyclerView.ViewHolder {
+
+    public class NewsViewHolder extends RecyclerView.ViewHolder {
         private ImageView newsImageView;
         private TextView newsTitleTextView;
         private TextView newsDescriptionTextView;
         private TextView dateTextView;
         private TextView authorTextView;
+        private ImageLoadingService imageLoadingService;
 
-        public NewsViewHolder(View itemView) {
+        public NewsViewHolder(View itemView, ImageLoadingService imageLoadingService) {
             super(itemView);
-            newsImageView = (ImageView) itemView.findViewById(R.id.iv_news_newsImage);
-            newsTitleTextView = (TextView) itemView.findViewById(R.id.tv_news_title);
-            newsDescriptionTextView = (TextView) itemView.findViewById(R.id.tv_news_description);
-            dateTextView = (TextView) itemView.findViewById(R.id.tv_news_date);
-            authorTextView = (TextView) itemView.findViewById(R.id.tv_news_author);
+            this.newsImageView = (ImageView) itemView.findViewById(R.id.iv_news_newsImage);
+            this.newsTitleTextView = (TextView) itemView.findViewById(R.id.tv_news_title);
+            this.newsDescriptionTextView = (TextView) itemView.findViewById(R.id.tv_news_description);
+            this.dateTextView = (TextView) itemView.findViewById(R.id.tv_news_date);
+            this.authorTextView = (TextView) itemView.findViewById(R.id.tv_news_author);
+            this.imageLoadingService = imageLoadingService;
         }
 
-        public void bindNews(NewsViewModel newsViewModel) {
-            ImageLoadingServiceInjector.getImageLoadingService(itemView.getContext()).loadImage(newsViewModel.getImageUrl(), newsImageView);
+        public void bindNews(final NewsViewModel newsViewModel) {
+            imageLoadingService.loadImage(newsViewModel.getImageUrl(), newsImageView);
             newsTitleTextView.setText(newsViewModel.getTitle());
             newsDescriptionTextView.setText(newsViewModel.getDescription());
             dateTextView.setText(newsViewModel.getDate());
             authorTextView.setText(newsViewModel.getAuthor());
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onNewsItemClick.onNewsItemClick(newsViewModel);
+                }
+            });
         }
+
+    }
+
+    public interface OnNewsItemClick {
+        void onNewsItemClick(NewsViewModel newsViewModel);
     }
 }

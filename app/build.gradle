@@ -45,4 +45,7 @@ dependencies {
     compile 'com.android.support:design:25.3.1'
     compile 'com.inthecheesefactory.thecheeselibrary:adjustable-imageview:1.0.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
+    compile "android.arch.persistence.room:runtime:1.0.0-alpha5"
+    annotationProcessor "android.arch.persistence.room:compiler:1.0.0-alpha5"
+    compile "android.arch.persistence.room:rxjava2:1.0.0-alpha5"
 }

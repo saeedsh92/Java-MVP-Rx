@@ -13,7 +13,7 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar_home"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?actionBarSize"
             app:layout_scrollFlags="scroll|enterAlways"
             app:title=" "
             app:titleTextColor="@color/white">
@@ -31,24 +31,51 @@
                 android:textColor="@color/white"
                 android:textSize="18sp" />
 
+            <LinearLayout
+                android:id="@+id/progressBar_home"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:paddingEnd="4dp"
+                    android:paddingStart="8dp"
+                    android:text="Sync..."
+                    android:textColor="@color/white" />
+
+                <ProgressBar
+                    android:layout_width="@dimen/size_home_progressBar"
+                    android:layout_height="@dimen/size_home_progressBar"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="8dp"
+                    android:indeterminate="true" />
+            </LinearLayout>
+
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_home_news"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/refreshLayout_home"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingTop="8dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" >
 
-    <ProgressBar
-        android:id="@+id/progressBar_home"
-        android:layout_width="@dimen/size_home_progressBar"
-        android:layout_height="@dimen/size_home_progressBar"
-        android:layout_gravity="center"
-        android:indeterminate="true"
-        android:visibility="gone"
-        tools:visibility="visible" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_home_news"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingTop="8dp"
+            />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+
 </android.support.design.widget.CoordinatorLayout>

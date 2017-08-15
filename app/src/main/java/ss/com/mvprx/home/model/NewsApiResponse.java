@@ -4,6 +4,8 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
+import ss.com.mvprx.home.model.repo.DataSource;
+
 /**
  * @author S.Shahini
  * @since 8/13/17
@@ -11,9 +13,14 @@ import java.util.ArrayList;
 
 public class NewsApiResponse {
     private String status;
-    private String source;
+
+    @SerializedName("source")
+    private String newsSource;
+
+    private DataSource.Type dataSourceType =DataSource.Type.REMOTE;
+
     @SerializedName("articles")
-    private ArrayList<NewsViewModel> newsViewModels;
+    private ArrayList<NewsViewModel> newsViewModels = new ArrayList<>();
 
     public ArrayList<NewsViewModel> getNewsViewModels() {
         return newsViewModels;
@@ -23,12 +30,12 @@ public class NewsApiResponse {
         this.newsViewModels = newsViewModels;
     }
 
-    public String getSource() {
-        return source;
+    public String getNewsSource() {
+        return newsSource;
     }
 
-    public void setSource(String source) {
-        this.source = source;
+    public void setNewsSource(String newsSource) {
+        this.newsSource = newsSource;
     }
 
     public String getStatus() {
@@ -37,5 +44,13 @@ public class NewsApiResponse {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public  DataSource.Type getDataSourceType() {
+        return dataSourceType;
+    }
+
+    public void setDataSourceType(DataSource.Type dataSourceType) {
+        this.dataSourceType = dataSourceType;
     }
 }
