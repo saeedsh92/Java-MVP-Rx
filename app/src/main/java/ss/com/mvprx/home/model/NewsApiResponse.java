@@ -4,20 +4,21 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
-import ss.com.mvprx.home.model.repo.DataSource;
+import ss.com.mvprx.server.BaseApiResponse;
+import ss.com.mvprx.server.DataSource;
 
 /**
  * @author S.Shahini
  * @since 8/13/17
  */
 
-public class NewsApiResponse {
+public class NewsApiResponse extends BaseApiResponse {
     private String status;
 
     @SerializedName("source")
     private String newsSource;
 
-    private DataSource.Type dataSourceType =DataSource.Type.REMOTE;
+    private DataSource.Type dataSourceType = DataSource.Type.REMOTE;
 
     @SerializedName("articles")
     private ArrayList<NewsViewModel> newsViewModels = new ArrayList<>();
@@ -46,7 +47,7 @@ public class NewsApiResponse {
         this.status = status;
     }
 
-    public  DataSource.Type getDataSourceType() {
+    public DataSource.Type getDataSourceType() {
         return dataSourceType;
     }
 

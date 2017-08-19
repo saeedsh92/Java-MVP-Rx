@@ -1,4 +1,4 @@
-package ss.com.mvprx.home.model.repo;
+package ss.com.mvprx.server;
 
 /**
  * @author S.Shahini

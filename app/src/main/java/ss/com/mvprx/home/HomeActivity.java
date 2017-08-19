@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import ss.com.mvprx.R;
 import ss.com.mvprx.home.adapter.NewsAdapter;
 import ss.com.mvprx.home.model.NewsViewModel;
-import ss.com.mvprx.home.model.repo.NewsRepository;
-import ss.com.mvprx.util.imageloading.ImageLoadingServiceInjector;
+import ss.com.mvprx.home.model.repo.NewsRepositoryImpl;
+import ss.com.mvprx.component.imageloading.ImageLoadingServiceInjector;
 
 public class HomeActivity extends AppCompatActivity implements HomeContract.View, NewsAdapter.OnNewsItemClick {
     private static final String TAG = "HomeActivity";
@@ -30,7 +30,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         setupViews();
-        presenter = new HomePresenter(new NewsRepository(this));
+        presenter = new HomePresenter(new NewsRepositoryImpl(this));
     }
 
     private void setupViews() {

@@ -85,7 +85,7 @@ public class News {
         this.author = author;
     }
 
-    public NewsViewModel toViewModel(){
+    public NewsViewModel toViewModel() {
         NewsViewModel newsViewModel = new NewsViewModel();
         newsViewModel.setTitle(title);
         newsViewModel.setDescription(description);

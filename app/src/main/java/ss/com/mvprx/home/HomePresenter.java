@@ -7,7 +7,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import ss.com.mvprx.home.model.NewsApiResponse;
-import ss.com.mvprx.home.model.repo.NewsRepository;
+import ss.com.mvprx.home.model.repo.NewsRepositoryImpl;
 
 /**
  * @author S.Shahini
@@ -16,11 +16,11 @@ import ss.com.mvprx.home.model.repo.NewsRepository;
 
 public class HomePresenter implements HomeContract.Presenter {
     private HomeContract.View view;
-    private NewsRepository newsRepository;
+    private NewsRepositoryImpl newsRepositoryImpl;
     private Disposable subscription;
 
-    public HomePresenter(NewsRepository newsRepository) {
-        this.newsRepository = newsRepository;
+    public HomePresenter(NewsRepositoryImpl newsRepositoryImpl) {
+        this.newsRepositoryImpl = newsRepositoryImpl;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class HomePresenter implements HomeContract.Presenter {
     @Override
     public void loadNews() {
         view.setProgressIndicator(true);
-        newsRepository.getNews()
+        newsRepositoryImpl.getNews()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
                 .subscribe(new Observer<NewsApiResponse>() {

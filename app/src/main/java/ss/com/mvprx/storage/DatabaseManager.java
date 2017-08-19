@@ -1,8 +1,6 @@
 package ss.com.mvprx.storage;
 
-import android.app.Application;
 import android.arch.persistence.room.Room;
-import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
 import ss.com.mvprx.home.model.repo.local.AppDatabase;

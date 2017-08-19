@@ -1,4 +1,4 @@
-package ss.com.mvprx.util.imageloading;
+package ss.com.mvprx.component.imageloading;
 
 import android.support.annotation.DrawableRes;
 import android.widget.ImageView;

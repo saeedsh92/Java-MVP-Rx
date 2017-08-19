@@ -14,10 +14,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import ss.com.mvprx.component.httpclient.HttpClientInjector;
 import ss.com.mvprx.home.model.NewsApiResponse;
-import ss.com.mvprx.home.model.repo.local.LocalNewsDataSource;
+import ss.com.mvprx.home.model.repo.local.LocalNewsDataRepository;
 import ss.com.mvprx.home.model.repo.local.News;
-import ss.com.mvprx.home.model.repo.remote.RemoteNewsDataSource;
+import ss.com.mvprx.home.model.repo.remote.RemoteNewsDataRepository;
 import ss.com.mvprx.storage.DatabaseManager;
 
 /**
@@ -25,42 +26,41 @@ import ss.com.mvprx.storage.DatabaseManager;
  * @since 8/12/17
  */
 
-public class NewsRepository implements NewsDataSource, Observer<NewsApiResponse> {
+public class NewsRepositoryImpl implements NewsDataSource, Observer<NewsApiResponse> {
     private static final String TAG = "NewsRepository";
     private Context context;
 
 
-    public NewsRepository(Context context) {
+    public NewsRepositoryImpl(Context context) {
         this.context = context;
     }
 
-    private LocalNewsDataSource localNewsDataSource;
-    private RemoteNewsDataSource remoteNewsDataSource;
     private ObservableEmitter<NewsApiResponse> responseEmitter;
 
     @Override
     public Observable<NewsApiResponse> getNews() {
-        downloadData();
-
-        localNewsDataSource = new LocalNewsDataSource(context);
-        return Observable.create(new ObservableOnSubscribe<NewsApiResponse>() {
-            @Override
-            public void subscribe(@NonNull final ObservableEmitter<NewsApiResponse> emitter) throws Exception {
-                NewsRepository.this.responseEmitter = emitter;
-                localNewsDataSource.getNews().
-                        subscribeOn(Schedulers.newThread()).
-                        observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(NewsRepository.this);
-            }
-        });
+        downloadData(new RemoteNewsDataRepository(HttpClientInjector.inject()));
+        return loadDataFromDatabase(new LocalNewsDataRepository(context));
     }
 
-    private void downloadData() {
-        remoteNewsDataSource = new RemoteNewsDataSource();
+    private void downloadData(RemoteNewsDataRepository remoteNewsDataSource) {
         remoteNewsDataSource.getNews()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(NewsRepository.this);
+                .subscribe(NewsRepositoryImpl.this);
+    }
+
+    private Observable<NewsApiResponse> loadDataFromDatabase(final LocalNewsDataRepository localNewsDataRepository) {
+        return Observable.create(new ObservableOnSubscribe<NewsApiResponse>() {
+            @Override
+            public void subscribe(@NonNull final ObservableEmitter<NewsApiResponse> emitter) throws Exception {
+                NewsRepositoryImpl.this.responseEmitter = emitter;
+                localNewsDataRepository.getNews().
+                        subscribeOn(Schedulers.newThread()).
+                        observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(NewsRepositoryImpl.this);
+            }
+        });
     }
 
     @Override
@@ -80,7 +80,7 @@ public class NewsRepository implements NewsDataSource, Observer<NewsApiResponse>
                 }
                 break;
             case REMOTE:
-                List<News> newsList = new ArrayList<News>();
+                List<News> newsList = new ArrayList<>();
                 for (int i = 0; i < newsApiResponse.getNewsViewModels().size(); i++) {
                     News news = new News();
                     news.setTitle(newsApiResponse.getNewsViewModels().get(i).getTitle());
@@ -93,6 +93,7 @@ public class NewsRepository implements NewsDataSource, Observer<NewsApiResponse>
                 }
                 DatabaseManager.getAppDatabase(context).newsDao().deleteAll();
                 DatabaseManager.getAppDatabase(context).newsDao().insertAll(newsList);
+                responseEmitter.onNext(newsApiResponse);
                 responseEmitter.onComplete();
                 break;
         }
@@ -106,6 +107,6 @@ public class NewsRepository implements NewsDataSource, Observer<NewsApiResponse>
 
     @Override
     public void onComplete() {
-        responseEmitter.onComplete();
+
     }
 }

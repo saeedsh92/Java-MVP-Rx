@@ -6,7 +6,7 @@ import android.arch.persistence.room.Query;
 
 import java.util.List;
 
-import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 
 /**
@@ -16,7 +16,7 @@ import io.reactivex.Flowable;
 @Dao
 public interface NewsDao {
     @Query("SELECT * FROM news")
-    Flowable<List<News>> getAll();
+    Single<List<News>> getAll();
 
     @Insert()
     void insertAll(List<News> news);

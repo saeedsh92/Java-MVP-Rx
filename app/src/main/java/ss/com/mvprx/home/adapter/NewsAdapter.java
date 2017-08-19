@@ -1,7 +1,6 @@
 package ss.com.mvprx.home.adapter;
 
 import android.content.Context;
-import android.support.annotation.DrawableRes;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ss.com.mvprx.R;
+import ss.com.mvprx.component.imageloading.ImageLoadingService;
 import ss.com.mvprx.home.model.NewsViewModel;
-import ss.com.mvprx.util.imageloading.ImageLoadingService;
 
 /**
  * @author S.Shahini
